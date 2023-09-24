@@ -1,0 +1,21 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Use Case 1: Block DNS Amplification Attacks
+-A INPUT -p udp --dport 53 -m string --hex-string "|0000FF0001|" --algo bm -j DROP
+# Explanation: This rule blocks DNS amplification attacks by dropping DNS packets with specific malicious payload patterns.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
