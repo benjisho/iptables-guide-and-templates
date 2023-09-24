@@ -15,7 +15,7 @@
 -A INPUT -p tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp --dport 443 -j ACCEPT
 
-# Use Case 23: Protect Against Directory Traversal Attacks (Variations)
+# Protect Against Directory Traversal Attacks (Variations)
 
 # Variation 1: Block Requests with Common Directory Traversal Sequences
 -A INPUT -p tcp --dport 80 -m string --algo bm --string "../" -j DROP
