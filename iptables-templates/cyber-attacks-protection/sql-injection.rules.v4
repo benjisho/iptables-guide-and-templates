@@ -1,0 +1,22 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Use Case 11: Prevent SQL Injection Attacks (Block Known Attack Strings)
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "SELECT * FROM" -j DROP
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "UNION ALL SELECT" -j DROP
+# Explanation: This rule blocks incoming HTTP requests containing known SQL injection attack strings.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
