@@ -33,6 +33,27 @@
 -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
 # Explanation: This rule allows SSH access with SSH key authentication only and limits failed login attempts.
 
+# Use Case 5: Allow SSH Access from Multiple Specific IP Addresses
+-A INPUT -p tcp --dport 22 -s 192.168.1.10 -j ACCEPT
+-A INPUT -p tcp --dport 22 -s 203.0.113.20 -j ACCEPT
+# Explanation: This rule allows SSH access from multiple specific IP addresses.
+
+# Use Case 6: Allow SSH Access with Port Forwarding
+-A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH
+-A INPUT -p tcp --dport 22 -m state --state NEW -j DROP
+-A INPUT -m recent --rcheck --seconds 60 --name SSH -j ACCEPT
+# Explanation: This rule allows SSH access with port forwarding.
+
+# Use Case 7: Allow SSH Access with Time-Based Restrictions
+-A INPUT -p tcp --dport 22 -m time --timestart 08:00 --timestop 18:00 --days Mon-Fri -j ACCEPT
+# Explanation: This rule allows SSH access only during specific times on weekdays.
+
+# Use Case 8: Allow SSH Access with Two-Factor Authentication (2FA)
+-A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH2FA
+-A INPUT -p tcp --dport 22 -m state --state NEW -j DROP
+-A INPUT -m recent --rcheck --seconds 60 --name SSH2FA -j ACCEPT
+# Explanation: This rule allows SSH access with two-factor authentication (2FA).
+
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
 
