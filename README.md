@@ -5,6 +5,10 @@ iptables can help you protect your server from various cyber attacks, such as DD
 - The guide explains the basic syntax and concepts of iptables,
 - the templates provide ready-to-use rules for common scenarios and use cases.
 
+## Table of Contents
+- [Guide](#guide)
+- [Templates](#templates)
+
 ## Guide
 **The guide is available [here](iptables-complete-guide)**
 
