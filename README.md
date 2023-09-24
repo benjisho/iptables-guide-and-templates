@@ -6,6 +6,7 @@ iptables can help you protect your server from various cyber attacks, such as DD
 - the templates provide ready-to-use rules for common scenarios and use cases.
 
 ## Guide
+The guide can be found [here](iptables-complete-guide)
 **The guide covers the following topics:**
 - What is iptables and how does it work?
 - How to install and configure iptables on different Linux distributions?
