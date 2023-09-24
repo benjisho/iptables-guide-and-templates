@@ -1,0 +1,44 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Use Case 29: Enforce HPKP for Enhanced Certificate Security (Variations)
+
+# Variation 1: Enforce HPKP Header with Valid Pin and Backup Pin
+-A INPUT -p tcp --dport 80 -m http_request --header "Public-Key-Pins" !--value "pin-sha256=\"base64+primary==\"; pin-sha256=\"base64+backup==\"; max-age=2592000; includeSubDomains" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "Public-Key-Pins" !--value "pin-sha256=\"base64+primary==\"; pin-sha256=\"base64+backup==\"; max-age=2592000; includeSubDomains" -j DROP
+# Explanation: These rules enforce the HPKP header with a valid pin and a backup pin, which can be used to prevent impersonation by attackers using misissued or fraudulent certificates. The value "pin-sha256=\"base64+primary==\"" means that the server's public key must match the primary pin. The value "pin-sha256=\"base64+backup==\"" means that the server's public key must match the backup pin in case the primary pin needs to be replaced. The value "max-age=2592000" means that the browser should enforce HPKP for 30 days. The value "includeSubDomains" means that HPKP should apply to all subdomains of the domain that sent the header[^1^][1].
+
+# Variation 2: Enforce HPKP Header with Report-Only Mode and Report URI
+-A INPUT -p tcp --dport 80 -m http_request --header "Public-Key-Pins-Report-Only" !--value "pin-sha256=\"base64+primary==\"; pin-sha256=\"base64+backup==\"; max-age=2592000; includeSubDomains; report-uri=\"https://example.com/hpkp-report\"" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "Public-Key-Pins-Report-Only" !--value "pin-sha256=\"base64+primary==\"; pin-sha256=\"base64+backup==\"; max-age=2592000; includeSubDomains; report-uri=\"https://example.com/hpkp-report\"" -j DROP
+# Explanation: These rules enforce the HPKP header with report-only mode and report URI, which can be used to test HPKP without blocking any traffic. The value "Public-Key-Pins-Report-Only" means that the browser should not enforce HPKP but only report any violations to the specified report URI. The value "report-uri=\"https://example.com/hpkp-report\"" means that the browser should send a JSON-formatted report to the given URL if it encounters a certificate chain that does not match any of the pins[^1^][1].
+
+# Variation 3: Block Requests with Invalid or Expired Pins
+-A INPUT -p tcp --dport 80 -m http_request --header "Public-Key-Pins" !--value "pin-sha256=\"base64+primary==\"" !--value "pin-sha256=\"base64+backup==\"" !--value "max-age=*" !--value "includeSubDomains" !--value "report-uri=*" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "Public-Key-Pins" !--value "pin-sha256=\"base64+primary==\"" !--value "pin-sha256=\"base64+backup==\"" !--value "max-age=*" !--value "includeSubDomains" !--value "report-uri=*" -j DROP
+# Explanation: These rules block requests with invalid or expired pins, which can be used to detect or exploit misconfigured or compromised servers. The value "!--value \"pin-sha256=\"base64+primary==\"\"" means that the server's public key does not match the primary pin. The value "!--value \"pin-sha256=\"base64+backup==\"\"" means that the server's public key does not match the backup pin. The value "!--value \"max-age=*\"" means that the HPKP header does not specify a valid expiration time. The value "!--value \"includeSubDomains\"" means that the HPKP header does not apply to subdomains. The value "!--value \"report-uri=*\"" means that the HPKP header does not specify a report URI.
+
+# Variation 4: Block Requests with Missing or Invalid HPKP Headers
+-A INPUT -p tcp --dport 80 !-m http_request --header "Public-Key-Pins" !-m http_request --header "Public-Key-Pins-Report-Only" -j DROP
+-A INPUT -p tcp --dport 443 !-m http_request --header "Public-Key-Pins" !-m http_request --header "Public-Key-Pins-Report-Only" -j DROP
+# Explanation: These rules block requests with missing or invalid HPKP headers, which can be used to detect or exploit servers that do not implement HPKP or use outdated certificates. The value "!-m http_request --header \"Public-Key-Pins\"" means that the request does not have a valid HPKP header. The value "!-m http_request --header \"Public-Key-Pins-Report-Only\"" means that the request does not have a valid HPKP report-only header.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
+
