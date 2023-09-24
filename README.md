@@ -5,8 +5,18 @@ iptables can help you protect your server from various cyber attacks, such as DD
 - The guide explains the basic syntax and concepts of iptables,
 - the templates provide ready-to-use rules for common scenarios and use cases.
 
-- **Common templates available - [here](iptables-templates)**
-- **Cyber Attacks Protection templates available - [here](iptables-templates/cyber-attacks-protection)**
+## Guide
+
+The guide covers the following topics:
+
+- What is iptables and how does it work?
+- How to install and configure iptables on different Linux distributions?
+- How to create, list, delete, and modify iptables rules and chains?
+- How to use iptables modules and extensions for advanced filtering and matching?
+- How to save, restore, and reload iptables rules?
+- How to troubleshoot and debug iptables rules?
+
+The guide is available in the `guide` directory of this repository.
 
 ## Table of Contents
 1. [Introduction](#1-introduction)
