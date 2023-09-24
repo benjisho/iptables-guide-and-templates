@@ -283,7 +283,7 @@ This command saves your rules to a file named rules.v4 in the /etc/iptables dire
 Create a script to load these rules during system startup. You can use a tool like iptables-persistent on Debian-based systems for automated rule loading.
 Ensure the script is executed at boot time. You may need to add it to the appropriate runlevel or systemd service.
 
-## Resources
+## 8 Resources
 - [Official iptables Documentation](https://netfilter.org/documentation/index.html)
 - [Linux iptables Wiki](https://wiki.archlinux.org/title/Iptables)
 - [DigitalOcean Tutorial on iptables](https://www.digitalocean.com/community/tutorials/iptables-essentials-common-firewall-rules-and-commands)
