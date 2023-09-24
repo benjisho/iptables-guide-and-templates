@@ -54,6 +54,29 @@
 -A INPUT -m recent --rcheck --seconds 60 --name SSH2FA -j ACCEPT
 # Explanation: This rule allows SSH access with two-factor authentication (2FA).
 
+# Use Case 9: Allow SSH Access with IP Whitelist and Port Forwarding
+-A INPUT -p tcp --dport 22 -s 203.0.113.30 -j ACCEPT
+-A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH
+-A INPUT -p tcp --dport 22 -m state --state NEW -j DROP
+-A INPUT -m recent --rcheck --seconds 60 --name SSH -j ACCEPT
+# Explanation: This rule allows SSH access from a specific IP (203.0.113.30) with port forwarding.
+
+# Use Case 10: Allow SSH Access with Password Authentication and IP Restriction
+-A INPUT -p tcp --dport 22 -s 192.168.1.0/24 -j ACCEPT
+-A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH
+-A INPUT -p tcp --dport 22 -m state --state NEW -j DROP
+-A INPUT -m recent --rcheck --seconds 60 --name SSH -j ACCEPT
+# Explanation: This rule allows SSH access with password authentication from a specific IP range (192.168.1.0/24).
+
+# Use Case 11: Allow SSH Access with Rate Limiting
+-A INPUT -p tcp --dport 22 -m state --state NEW -m limit --limit 3/min --limit-burst 3 -j ACCEPT
+-A INPUT -p tcp --dport 22 -j DROP
+# Explanation: This rule limits the rate of incoming SSH connection attempts.
+
+# Use Case 12: Allow SSH Access for a Specific User (Example: "john")
+-A INPUT -p tcp --dport 22 -m state --state NEW -m owner --uid-owner john -j ACCEPT
+# Explanation: This rule allows SSH access for a specific user (e.g., "john").
+
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
 
