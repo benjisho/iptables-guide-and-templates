@@ -3,13 +3,14 @@
 This guide provides an introduction to iptables, a powerful tool for configuring and managing firewall rules on Linux systems.
 
 ## Table of Contents
-1. Introduction
-2. Basics of iptables
-3. Creating Rules
-4. Examples
-5. Advanced Configuration
-6. Troubleshooting
-7. Conclusion
+1. [Introduction](#1-introduction)
+2. [Basics of iptables](#2-basics-of-iptables)
+3. [Creating Rules](#3-creating-rules)
+4. [Examples](#4-examples)
+5. [Advanced Configuration](#5-advanced-configuration)
+6. [Troubleshooting](#6-troubleshooting)
+7. [Conclusion](#7-conclusion)
+8. [Resources](#8-resources)
 
 ### 1. Introduction
 
