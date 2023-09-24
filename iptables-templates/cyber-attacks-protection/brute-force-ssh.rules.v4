@@ -14,8 +14,6 @@
 # Allow SSH Access (Change port if necessary)
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
-# Use Case 16: Block SSH Brute Force Attacks (Variations)
-
 # Variation 1: Block SSH Connection Attempts from a Single IP Address Exceeding 5 per Minute
 -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m recent --name sshbrute --update --seconds 60 --hitcount 5 -j DROP
 -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m recent --name sshbrute --set -j ACCEPT
