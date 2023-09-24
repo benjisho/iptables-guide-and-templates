@@ -1,1 +1,55 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
 
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Use Case 28: Protect Against Various Web Attacks Using Security Headers (Variations)
+
+# Variation 1: Enforce Content Security Policy (CSP) Header
+-A INPUT -p tcp --dport 80 -m http_request --header "Content-Security-Policy" !--value "default-src 'self'" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "Content-Security-Policy" !--value "default-src 'self'" -j DROP
+# Explanation: These rules enforce the Content Security Policy (CSP) header, which can be used to restrict the sources of content that can be loaded by the browser, such as scripts, stylesheets, images, fonts, etc. This can prevent various web attacks, such as cross-site scripting (XSS), clickjacking, code injection, etc. The value "default-src 'self'" means that only content from the same origin as the web page is allowed[^1^][1].
+
+# Variation 2: Enforce X-Content-Type-Options Header
+-A INPUT -p tcp --dport 80 -m http_request --header "X-Content-Type-Options" !--value "nosniff" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "X-Content-Type-Options" !--value "nosniff" -j DROP
+# Explanation: These rules enforce the X-Content-Type-Options header, which can be used to prevent the browser from guessing the content type of a resource based on its content or extension. This can prevent some web attacks, such as MIME type confusion, content sniffing, etc. The value "nosniff" means that the browser should only use the content type declared by the server[^2^][2].
+
+# Variation 3: Enforce X-Frame-Options Header
+-A INPUT -p tcp --dport 80 -m http_request --header "X-Frame-Options" !--value "DENY" !--value "SAMEORIGIN" !--value "ALLOW-FROM trusted_domain.com" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "X-Frame-Options" !--value "DENY" !--value "SAMEORIGIN" !--value "ALLOW-FROM trusted_domain.com" -j DROP
+# Explanation: These rules enforce the X-Frame-Options header, which can be used to prevent the web page from being rendered in a frame or iframe element by another website. This can prevent some web attacks, such as clickjacking, frame injection, etc. The value "DENY" means that the web page cannot be framed by any website. The value "SAMEORIGIN" means that the web page can only be framed by the same origin as the web page. The value "ALLOW-FROM trusted_domain.com" means that the web page can only be framed by a specific trusted domain[^3^][3].
+
+# Variation 4: Enforce X-XSS-Protection Header
+-A INPUT -p tcp --dport 80 -m http_request --header "X-XSS-Protection" !--value "1; mode=block" !--value "0" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "X-XSS-Protection" !--value "1; mode=block" !--value "0" -j DROP
+# Explanation: These rules enforce the X-XSS-Protection header, which can be used to enable or disable the browser's built-in XSS filter. This can prevent some web attacks, such as reflected XSS, DOM-based XSS, etc. The value "1; mode=block" means that the browser should enable the XSS filter and block any malicious script from executing. The value "0" means that the browser should disable the XSS filter.
+
+# Variation 5: Enforce Strict-Transport-Security Header
+-A INPUT -p tcp --dport 80 -m http_request --header "Strict-Transport-Security" !--value "max-age=31536000; includeSubDomains; preload" !--value "max-age=0" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "Strict-Transport-Security" !--value "max-age=31536000; includeSubDomains; preload" !--value "max-age=0" -j DROP
+# Explanation: These rules enforce the Strict-Transport-Security header, which can be used to instruct the browser to only use HTTPS for the web page and its subdomains. This can prevent some web attacks, such as man-in-the-middle, downgrade, etc. The value "max-age=31536000; includeSubDomains; preload" means that the browser should use HTTPS for the web page and its subdomains for one year and add the domain to the preload list of browsers that support HSTS. The value "max-age=0" means that the browser should disable HSTS for the web page and its subdomains.
+
+# Variation 6: Enforce X-Permitted-Cross-Domain-Policies Header
+-A INPUT -p tcp --dport 80 -m http_request --header "X-Permitted-Cross-Domain-Policies" !--value "none" !--value "master-only" !--value "by-content-type" !--value "by-ftp-filename" !--value "all" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "X-Permitted-Cross-Domain-Policies" !--value "none" !--value "master-only" !--value "by-content-type" !--value "by-ftp-filename" !--value "all" -j DROP
+# Explanation: These rules enforce the X-Permitted-Cross-Domain-Policies header, which can be used to restrict the access of Adobe Flash and Adobe Acrobat to the web page and its resources. This can prevent some web attacks, such as cross-site request forgery (CSRF), cross-site scripting (XSS), etc. The value "none" means that no policy files are allowed anywhere on the website. The value "master-only" means that only the master policy file (crossdomain.xml) is allowed. The value "by-content-type" means that only policy files served with Content-Type: text/x-cross-domain-policy are allowed. The value "by-ftp-filename" means that only policy files with names matching crossdomain.xml are allowed on FTP servers. The value "all" means that any policy files are allowed.
+
+# Variation 7: Enforce Referrer-Policy Header
+-A INPUT -p tcp --dport 80 -m http_request --header "Referrer-Policy" !--value "no-referrer" !--value "no-referrer-when-downgrade" !--value "same-origin" !--value "origin" !--value "strict-origin" !--value "origin-when-cross-origin" !--value "strict-origin-when-cross-origin" !--value "unsafe-url" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --header "Referrer-Policy" !--value "no-referrer" !--value "no-referrer-when-downgrade" !--value "same-origin" !--value "origin" !--value "strict-origin" !--value "origin-when-cross-origin" !--value "strict-origin-when-cross-origin" !--value "unsafe-url" -j DROP
+# Explanation: These rules enforce the Referrer-Policy header, which can be used to control how much referrer information is sent along with requests from the web page. This can prevent some web attacks, such as information leakage, phishing, etc. The value "no-referrer" means that no referrer information is sent. The value "no-referrer-when-downgrade" means that no referrer information is sent when switching from HTTPS to HTTP. The value "same-origin" means that only referrer information from the same origin as the web page is sent. The value "origin" means that only the origin of the web page is sent as referrer information. The value "strict-origin" means that only the origin of the web page is sent as referrer information, unless switching from HTTPS to HTTP, in which case no referrer information is sent. The value "origin-when-cross-origin" means that only the origin of the web page is sent as referrer information when navigating to a different origin, otherwise the full URL of the web page is sent. The value "strict-origin-when-cross-origin" means that only the origin of the web page is sent as referrer information when navigating to a different origin or switching from HTTPS to HTTP, otherwise the full URL of the web page is sent. The value "unsafe-url" means that the full URL of the web page is always sent as referrer information.
+
+# Default Drop Rule (Deny all
