@@ -14,7 +14,7 @@
 # Allow SSH Access (Change port if necessary)
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
-# Use Case 1: Port Forwarding for HTTP (80) to Internal Web Server (192.168.1.10)
+# Use Case 1: Port Forwarding from External Port HTTP (80) to Internal Web Server (192.168.1.10)
 -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to-destination 192.168.1.10:80
 # Explanation: This rule forwards incoming HTTP traffic to an internal web server (192.168.1.10).
 
