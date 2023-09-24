@@ -59,6 +59,7 @@ iptables -F
 - Blocking specific IP addresses.
 - Allowing outgoing HTTP requests.
 
+### 4. Examples
 Example:
 
 ```bash
