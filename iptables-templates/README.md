@@ -81,7 +81,7 @@ Please note that these templates are for educational and reference purposes. Tes
 
 These templates are provided for educational and reference purposes only. Use them at your own risk. The author of this repository is not responsible for any damage or loss caused by using these templates.
 
-For questions or feedback, contact me at [your.email@example.com](mailto:your.email@example.com).
+For questions or feedback, [contact me](https://linktr.ee/benjisho).
 
 ---
 &copy; 2023 benjisho. All rights reserved.
