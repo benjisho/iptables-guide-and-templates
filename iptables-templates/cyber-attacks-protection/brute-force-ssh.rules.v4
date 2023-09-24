@@ -44,6 +44,16 @@
 # Variation 6: Block SSH Connection Attempts with Invalid Passwords (Using Fail2Ban)
 -A INPUT -p tcp !--syn !--fin !--rst !--ack !--urg !--psh !--allflags !--noflags !--tcp-flags SYN,ACK SYN,ACK !--tcp-option !--tcp-mss !--length !--ttl !--tos !--sid-owner !--uid-owner !--gid-owner !--pid-owner !--state INVALID,NEW,ESTABLISHED,RELATED,UNTRACKED,SNAT,DNAT,INVALID,NEW,ESTABLISHED,RELATED,UNTRACKED,SNAT,DNAT !--ctstate INVALID,NEW,ESTABLISHED,RELATED,UNTRACKED,SNAT,DNAT,INVALID,NEW,ESTABLISHED,RELATED,UNTRACKED,SNAT,DNAT !--icmp-type any !--limit-burst !--limit-rate !--limit-rate-unit !--limit-unit !--hashlimit-burst !--hashlimit-mode srcip,dstip,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist,srclist,dstlist !--hashlimit-name !--hashlimit-htable-size !--hashlimit-htable-max !--hashlimit-htable-expire !--hashlimit-htable-gcinterval !--hashlimit-rate !--hashlimit-rate-unit !--hashlimit-unit -j fail2ban-ssh
 # Explanation: This rule blocks SSH connection attempts with invalid passwords using Fail2Ban, a tool that monitors log files and bans IPs that show malicious signs.
+# -A INPUT: This part of the rule appends a rule to the INPUT chain, which is responsible for processing incoming packets.
+# -p tcp: Specifies that this rule applies to TCP traffic.
+# ! followed by various -- flags: These are negations (!) followed by various flags like --syn, --fin, --rst, etc. They are used to filter specific TCP packet attributes. For example, --syn checks for the SYN flag in TCP packets, and ! negates it, so it matches packets that don't have the SYN flag set.
+# --tcp-flags SYN,ACK SYN,ACK: This part of the rule specifically looks for TCP packets with the SYN and ACK flags set, indicating the start of a TCP connection.
+# --state: Specifies the state of the connection, and various connection states are listed after it. It's used to match packets based on their connection state.
+# --ctstate: Similar to --state, but is used to match packets based on connection tracking states.
+# --icmp-type any: This matches packets with any ICMP (Internet Control Message Protocol) type.
+# --limit-burst, --limit-rate, --limit-rate-unit, --limit-unit, --hashlimit-burst, --hashlimit-mode, --hashlimit-name, --hashlimit-htable-size, --hashlimit-htable-max, --hashlimit-htable-expire, --hashlimit-htable-gcinterval, --hashlimit-rate, --hashlimit-rate-unit, --hashlimit-unit: These flags are used for rate limiting and hashing-based limiting. They control how frequently this rule is applied based on packet rates.
+# -j fail2ban-ssh: This part specifies the target action. It tells the firewall to jump to the fail2ban-ssh chain. Fail2Ban will manage this chain and take actions based on its configuration, such as banning an IP address after a certain number of invalid login attempts.
+
 
 # Variation 7: Block SSH Connection Attempts from Multiple IP Addresses Exceeding 10 per Hour (Using Recent Module)
 -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m recent --name sshbrute3 --update --seconds 3600 --hitcount 10 -j DROP
