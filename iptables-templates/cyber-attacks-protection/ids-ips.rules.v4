@@ -1,0 +1,63 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Protect Against Attacks Using IDS/IPS Systems (Variations)
+
+# Variation 1: Integrate with Snort IDS/IPS System
+-A INPUT -p tcp --dport 80 -j NFQUEUE --queue-num 1
+-A INPUT -p tcp --dport 443 -j NFQUEUE --queue-num 1
+# Explanation: These rules integrate with Snort IDS/IPS system, which is a popular open source network intrusion detection and prevention system that can analyze network traffic and detect malicious packets based on rules or signatures[^1^][1]. The rules use the NFQUEUE target to send the packets to a user-space queue, where Snort can inspect them and decide whether to accept, drop, or modify them[^2^][2]. The queue number is an arbitrary value that can be used to identify the queue.
+
+# Variation 2: Integrate with Suricata IDS/IPS System
+-A INPUT -p tcp --dport 80 -j NFQUEUE --queue-balance 2:3
+-A INPUT -p tcp --dport 443 -j NFQUEUE --queue-balance 2:3
+# Explanation: These rules integrate with Suricata IDS/IPS system, which is a modern open source network intrusion detection and prevention system that can analyze network traffic and detect malicious packets based on rules or signatures[^3^][3]. The rules use the NFQUEUE target to send the packets to a user-space queue, where Suricata can inspect them and decide whether to accept, drop, or modify them[^4^][4]. The queue-balance option is used to distribute the packets among multiple queues for load balancing and performance improvement.
+
+# Variation 3: Integrate with Bro IDS/IPS System
+-A INPUT -p tcp --dport 80 -j NFLOG --nflog-group 1
+-A INPUT -p tcp --dport 443 -j NFLOG --nflog-group 1
+# Explanation: These rules integrate with Bro IDS/IPS system, which is a powerful open source network analysis framework that can monitor network traffic and detect malicious packets based on scripts or policies. The rules use the NFLOG target to send the packets to a user-space logging daemon, where Bro can capture them and analyze them. The nflog-group option is used to specify the netlink multicast group that receives the packets.
+
+# Variation 4: Integrate with OSSEC HIDS/IPS System
+-A INPUT -p tcp --dport 22 -m recent --name SSH --set
+-A INPUT -p tcp --dport 22 -m recent --name SSH --rcheck --seconds 60 --hitcount 4 -j REJECT --reject-with tcp-reset
+-A OUTPUT -m owner !--uid-owner ossec !--uid-owner root !--uid-owner www-data !--uid-owner mysql !--uid-owner postgres !--uid-owner sshd !--uid-owner syslog !--uid-owner ntp !--uid-owner snmp !--uid-owner bind !--uid-owner postfix !--uid-owner dovecot !--uid-owner clamav !--uid-owner amavis !--uid-owner spamassassin !--uid-owner opendkim !--uid-owner opendmarc !--uid-owner fail2ban !--uid-owner redis !--uid-owner mongodb !--uid-owner memcache !--uid-owner rabbitmq !--uid-owner nginx !--uid-owner apache2 !--uid-owner tomcat8 !--uid-owner nodejs !--uid-owner php-fpm7.4 !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"!<python3>"<perl><perl><perl><perl><perl><perl><perl><perl><perl><perl>-j LOGDROP
+# Explanation: These rules integrate with OSSEC HIDS/IPS system, which is a popular open source host-based intrusion detection and prevention system that can monitor system activity and detect malicious behavior based on rules or signatures. The first two rules use the recent module to limit the number of SSH login attempts per minute to prevent brute force attacks. The last rule uses the owner module to restrict the outgoing traffic to only authorized users and processes, and logs and drops any other traffic to prevent data exfiltration or command and control communication. The LOGDROP chain is a custom chain that logs the packets with a prefix and drops them.
+
+# Variation 5: Integrate with Wazuh HIDS/IPS System
+-A INPUT -p tcp --dport 1514 -j ACCEPT
+-A INPUT -p udp --dport 1514 -j ACCEPT
+-A INPUT -p tcp --dport 1515 -j ACCEPT
+-A INPUT -p tcp --dport 1516 -j ACCEPT
+# Explanation: These rules integrate with Wazuh HIDS/IPS system, which is a fork of OSSEC that provides enhanced features and capabilities for security monitoring, analysis, and compliance. The rules allow traffic to the ports used by Wazuh for agent-server communication (1514), agent registration (1515), and API access (1516).
+
+# Variation 6: Integrate with ModSecurity WAF/IPS System
+-A INPUT -p tcp --dport 80 -j NFQUEUE --queue-num 2
+-A INPUT -p tcp --dport 443 -j NFQUEUE --queue-num 2
+# Explanation: These rules integrate with ModSecurity WAF/IPS system, which is a popular open source web application firewall and intrusion prevention system that can protect web applications from various attacks, such as SQL injection, XSS, CSRF, etc. The rules use the NFQUEUE target to send the packets to a user-space queue, where ModSecurity can inspect them and decide whether to accept, drop, or modify them. The queue number is an arbitrary value that can be used to identify the queue.
+
+# Variation 7: Integrate with Fail2ban IPS System
+-A INPUT -p tcp --dport 22 -m recent --name SSH --set
+-A INPUT -p tcp --dport 22 -m recent --name SSH --rcheck --seconds 60 --hitcount 4 -j REJECT --reject-with tcp-reset
+-A INPUT -m fail2ban-ssh -j DROP
+# Explanation: These rules integrate with Fail2ban IPS system, which is a simple but effective tool that can monitor log files and ban IP addresses that show malicious behavior, such as repeated login failures, brute force attacks, etc. The first two rules use the recent module to limit the number of SSH login attempts per minute. The last rule uses the fail2ban-ssh chain, which is a custom chain created by Fail2ban that contains the IP addresses that have been banned by Fail2ban for SSH attacks.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
+
