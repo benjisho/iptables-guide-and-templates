@@ -1,0 +1,28 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Use Case 1: Block Port Scanning Attempts
+-A INPUT -m recent --name portscan --rcheck --seconds 60 --hitcount 10 -j DROP
+-A INPUT -m recent --name portscan --remove
+-A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+-A INPUT -p tcp -m tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+-A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+-A INPUT -p tcp -m tcp --tcp-flags FIN,RST FIN,RST -j DROP
+-A INPUT -p tcp -m tcp --tcp-flags FIN,ACK FIN -j DROP
+-A INPUT -p tcp -m tcp --tcp-flags ACK,URG URG -j DROP
+# Explanation: These rules help block port scanning attempts and certain types of malicious TCP packets often associated with reconnaissance.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
