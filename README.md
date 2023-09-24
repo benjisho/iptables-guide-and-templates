@@ -259,7 +259,8 @@ Below is a complete example of an iptables.v4 configuration. Adjust the rules to
 
 COMMIT
 ```
-In this complete iptables.v4 configuration, we've included default policies, rules for loopback traffic, allowing established and related connections, allowing SSH, HTTP, and HTTPS traffic, rate limiting, blocking specific IP addresses, and a default drop rule. Adjust this configuration to meet your specific security and networking needs.
+In this complete iptables.v4 configuration, we've included default policies, rules for loopback traffic, allowing established and related connections, allowing SSH, HTTP, and HTTPS traffic, rate limiting, blocking specific IP addresses, and a default drop rule.
+Adjust this configuration to meet your specific security and networking needs.
 
 #### Best Practices
 - Keep rules simple and well-documented.
@@ -271,7 +272,7 @@ Before making significant changes to your iptables rules, it's essential to crea
 ```bash
 iptables-save > /etc/iptables/backup.rules
 ```
-This command saves your existing iptables rules to a file named backup.rules in the /etc/iptables directory. You can replace the file path and name to suit your preferences.
+This command saves your existing iptables rules to a file named `backup.rules` in the `/etc/iptables` directory. You can replace the file path and name to suit your preferences.
 
 ### Applying iptables Rules Persistently
 To ensure that your iptables rules persist across system reboots, you need to save your rules to a configuration file and load them during system startup.
@@ -281,9 +282,10 @@ iptables-save > /etc/iptables/rules.v4
 ```
 This command saves your rules to a file named rules.v4 in the /etc/iptables directory. For IPv6 rules, you can use ip6tables-save.
 Create a script to load these rules during system startup. You can use a tool like iptables-persistent on Debian-based systems for automated rule loading.
-Ensure the script is executed at boot time. You may need to add it to the appropriate runlevel or systemd service.
+Ensure the script is executed at boot time.
+- You may need to add it to the appropriate `runlevel` or `systemd` service.
 
-## 8 Resources
+## 8. Resources
 - [Official iptables Documentation](https://netfilter.org/documentation/index.html)
 - [Linux iptables Wiki](https://wiki.archlinux.org/title/Iptables)
 - [DigitalOcean Tutorial on iptables](https://www.digitalocean.com/community/tutorials/iptables-essentials-common-firewall-rules-and-commands)
