@@ -171,3 +171,9 @@ In this complete iptables.v4 configuration, we've included default policies, rul
 
 ### Conclusion
 In this guide, you've learned the fundamentals of iptables, how to create rules, and how to secure your Linux system using iptables. The provided examples and explanations should help you get started with configuring iptables for your specific requirements.
+
+## Resources
+- [Official iptables Documentation](https://netfilter.org/documentation/index.html)
+- [Linux iptables Wiki](https://wiki.archlinux.org/title/Iptables)
+- [DigitalOcean Tutorial on iptables](https://www.digitalocean.com/community/tutorials/iptables-essentials-common-firewall-rules-and-commands)
+
