@@ -14,9 +14,43 @@
 # Allow SSH Access (Change port if necessary)
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
-# Allow Incoming SMTP (port 25) and IMAP (port 143) for Mail Server
--A INPUT -p tcp --dport 25 -j ACCEPT
--A INPUT -p tcp --dport 143 -j ACCEPT
+# Use Case 1: Allow SMTP and IMAP for Postfix Mail Server
+-A INPUT -p tcp --dport 25 -j ACCEPT  # SMTP (Postfix)
+-A INPUT -p tcp --dport 587 -j ACCEPT # SMTP (Submission)
+-A INPUT -p tcp --dport 143 -j ACCEPT # IMAP (Postfix)
+-A INPUT -p tcp --dport 993 -j ACCEPT # IMAPS (Postfix)
+# Explanation: This rule allows SMTP and IMAP traffic for the Postfix mail server.
+
+# Use Case 2: Allow SMTP and IMAP for Exim Mail Server
+-A INPUT -p tcp --dport 25 -j ACCEPT  # SMTP (Exim)
+-A INPUT -p tcp --dport 587 -j ACCEPT # SMTP (Submission)
+-A INPUT -p tcp --dport 143 -j ACCEPT # IMAP (Exim)
+-A INPUT -p tcp --dport 993 -j ACCEPT # IMAPS (Exim)
+# Explanation: This rule allows SMTP and IMAP traffic for the Exim mail server.
+
+# Use Case 3: Allow SMTP and IMAP for Sendmail Mail Server
+-A INPUT -p tcp --dport 25 -j ACCEPT  # SMTP (Sendmail)
+-A INPUT -p tcp --dport 587 -j ACCEPT # SMTP (Submission)
+-A INPUT -p tcp --dport 143 -j ACCEPT # IMAP (Sendmail)
+-A INPUT -p tcp --dport 993 -j ACCEPT # IMAPS (Sendmail)
+# Explanation: This rule allows SMTP and IMAP traffic for the Sendmail mail server.
+
+# Use Case 4: Allow SMTP and IMAP for Dovecot Mail Server
+-A INPUT -p tcp --dport 25 -j ACCEPT  # SMTP (Dovecot)
+-A INPUT -p tcp --dport 587 -j ACCEPT # SMTP (Submission)
+-A INPUT -p tcp --dport 143 -j ACCEPT # IMAP (Dovecot)
+-A INPUT -p tcp --dport 993 -j ACCEPT # IMAPS (Dovecot)
+# Explanation: This rule allows SMTP and IMAP traffic for the Dovecot mail server.
+
+# Use Case 5: Allow Outgoing Email Traffic to Gmail SMTP Servers
+-A OUTPUT -p tcp -d smtp.gmail.com --dport 25 -j ACCEPT
+-A OUTPUT -p tcp -d smtp.gmail.com --dport 587 -j ACCEPT
+# Explanation: Allow outgoing email traffic to Gmail's SMTP servers.
+
+# Use Case 6: Allow Outgoing Email Traffic to Outlook SMTP Servers
+-A OUTPUT -p tcp -d smtp.office365.com --dport 25 -j ACCEPT
+-A OUTPUT -p tcp -d smtp.office365.com --dport 587 -j ACCEPT
+# Explanation: Allow outgoing email traffic to Outlook's SMTP servers.
 
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
