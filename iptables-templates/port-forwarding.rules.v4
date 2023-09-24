@@ -14,9 +14,38 @@
 # Allow SSH Access (Change port if necessary)
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
-# Port Forwarding from External Port 80 to Internal IP 192.168.1.10
--A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j DNAT --to 192.168.1.10:80
--A FORWARD -p tcp -d 192.168.1.10 --dport 80 -j ACCEPT
+# Use Case 1: Port Forwarding for HTTP (80) to Internal Web Server (192.168.1.10)
+-A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to-destination 192.168.1.10:80
+# Explanation: This rule forwards incoming HTTP traffic to an internal web server (192.168.1.10).
+
+# Use Case 2: Port Forwarding for SSH (2222) to Internal Server (192.168.1.20)
+-A PREROUTING -i eth0 -p tcp --dport 2222 -j DNAT --to-destination 192.168.1.20:22
+# Explanation: This rule forwards incoming SSH traffic to an internal server (192.168.1.20) on port 22.
+
+# Use Case 3: Port Forwarding for FTP (21) to Internal FTP Server (192.168.1.30)
+-A PREROUTING -i eth0 -p tcp --dport 21 -j DNAT --to-destination 192.168.1.30:21
+# Explanation: This rule forwards incoming FTP traffic to an internal FTP server (192.168.1.30).
+
+# Use Case 4: Port Forwarding for Remote Desktop (3389) to Internal Windows PC (192.168.1.40)
+-A PREROUTING -i eth0 -p tcp --dport 3389 -j DNAT --to-destination 192.168.1.40:3389
+# Explanation: This rule forwards incoming Remote Desktop traffic to an internal Windows PC (192.168.1.40).
+
+# Use Case 5: Port Forwarding for IPsec VPN (500, 4500) to Internal VPN Server (192.168.1.50)
+-A PREROUTING -i eth0 -p udp --dport 500 -j DNAT --to-destination 192.168.1.50:500
+-A PREROUTING -i eth0 -p udp --dport 4500 -j DNAT --to-destination 192.168.1.50:4500
+# Explanation: This rule forwards incoming IPsec VPN traffic to an internal VPN server (192.168.1.50).
+
+# Use Case 6: Port Forwarding for WireGuard VPN (51820) to Internal WireGuard Server (192.168.1.60)
+-A PREROUTING -i eth0 -p udp --dport 51820 -j DNAT --to-destination 192.168.1.60:51820
+# Explanation: This rule forwards incoming WireGuard VPN traffic to an internal WireGuard server (192.168.1.60).
+
+# Use Case 7: Port Forwarding for OpenVPN (1194) to Internal OpenVPN Server (192.168.1.70)
+-A PREROUTING -i eth0 -p udp --dport 1194 -j DNAT --to-destination 192.168.1.70:1194
+# Explanation: This rule forwards incoming OpenVPN traffic to an internal OpenVPN server (192.168.1.70).
+
+# Use Case 8: Port Forwarding for SSL (443) to Internal Web Server (192.168.1.80)
+-A PREROUTING -i eth0 -p tcp --dport 443 -j DNAT --to-destination 192.168.1.80:443
+# Explanation: This rule forwards incoming SSL traffic to an internal web server (192.168.1.80).
 
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
