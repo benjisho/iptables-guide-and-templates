@@ -14,7 +14,7 @@
 # Allow DNS Traffic (Change port if necessary)
 -A INPUT -p udp --dport 53 -j ACCEPT
 
-# Use Case 17: Mitigate DNS Amplification Attacks (Variations)
+# Mitigate DNS Amplification Attacks (Variations)
 
 # Variation 1: Block Incoming DNS Requests with Large Response Packets (DNS Amplification)
 -A INPUT -p udp --dport 53 -m length --length 300:65535 -j DROP
