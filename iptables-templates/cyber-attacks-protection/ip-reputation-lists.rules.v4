@@ -1,0 +1,59 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Use Case 31: Protect Against Traffic from Known Malicious IP Addresses Using IP Reputation Lists (Variations)
+
+# Variation 1: Block Traffic from IP Addresses Listed in Cisco Talos Reputation Center
+-A INPUT -p tcp --dport 80 -m set --match-set cisco_talos src -j DROP
+-A INPUT -p tcp --dport 443 -m set --match-set cisco_talos src -j DROP
+# Explanation: These rules block traffic from IP addresses listed in Cisco Talos Reputation Center, which is a comprehensive real-time threat detection network that provides IP reputation scores based on various factors, such as email and spam data, threat intelligence, vulnerability information, etc. The rules use the ipset module to create and update a set of IP addresses named cisco_talos, which can be populated by querying the Cisco Talos API[^1^][1] or using a script[^2^][2].
+
+# Variation 2: Block Traffic from IP Addresses Listed in IBM X-Force Threat Intelligence
+-A INPUT -p tcp --dport 80 -m set --match-set ibm_xforce src -j DROP
+-A INPUT -p tcp --dport 443 -m set --match-set ibm_xforce src -j DROP
+# Explanation: These rules block traffic from IP addresses listed in IBM X-Force Threat Intelligence, which is a cloud-based platform that provides IP reputation scores based on various factors, such as malware analysis, phishing detection, botnet activity, etc. The rules use the ipset module to create and update a set of IP addresses named ibm_xforce, which can be populated by querying the IBM X-Force API[^3^][3] or using a script[^4^][4].
+
+# Variation 3: Block Traffic from IP Addresses Listed in Barracuda Central
+-A INPUT -p tcp --dport 80 -m set --match-set barracuda src -j DROP
+-A INPUT -p tcp --dport 443 -m set --match-set barracuda src -j DROP
+# Explanation: These rules block traffic from IP addresses listed in Barracuda Central, which is a database of IP addresses that have been reported as sources of spam, viruses, phishing, or other malicious activities. The rules use the ipset module to create and update a set of IP addresses named barracuda, which can be populated by downloading the Barracuda Reputation Block List (BRBL) or using a script.
+
+# Variation 4: Block Traffic from IP Addresses Listed in Symantec IP Reputation Investigation
+-A INPUT -p tcp --dport 80 -m set --match-set symantec src -j DROP
+-A INPUT -p tcp --dport 443 -m set --match-set symantec src -j DROP
+# Explanation: These rules block traffic from IP addresses listed in Symantec IP Reputation Investigation, which is a tool that provides IP reputation scores based on various factors, such as spam volume, malware infections, phishing attempts, etc. The rules use the ipset module to create and update a set of IP addresses named symantec, which can be populated by querying the Symantec API or using a script.
+
+# Variation 5: Block Traffic from IP Addresses Listed in IPQualityScore
+-A INPUT -p tcp --dport 80 -m set --match-set ipqualityscore src -j DROP
+-A INPUT -p tcp --dport 443 -m set --match-set ipqualityscore src -j DROP
+# Explanation: These rules block traffic from IP addresses listed in IPQualityScore, which is a service that provides IP reputation scores based on various factors, such as proxy and VPN detection, fraud prevention, bot detection, etc. The rules use the ipset module to create and update a set of IP addresses named ipqualityscore, which can be populated by querying the IPQualityScore API or using a script.
+
+# Variation 6: Block Traffic from IP Addresses Listed in VirusTotal
+-A INPUT -p tcp --dport 80 -m set --match-set virustotal src -j DROP
+-A INPUT -p tcp --dport 443 -m set --match-set virustotal src -j DROP
+# Explanation: These rules block traffic from IP addresses listed in VirusTotal, which is a service that provides IP reputation scores based on various factors, such as malware analysis, URL scanning, file hashing, etc. The rules use the ipset module to create and update a set of IP addresses named virustotal, which can be populated by querying the VirusTotal API or using a script.
+
+# Variation 7: Block Traffic from IP Addresses Listed in DataVisor
+-A INPUT -p tcp --dport 80 -m set --match-set datavisor src -j DROP
+-A INPUT -p tcp --dport 443 -m set --match-set datavisor src -j DROP
+# Explanation: These rules block traffic from IP addresses listed in DataVisor, which is a service that provides IP reputation scores based on various factors, such as fraud detection, account takeover, fake account creation, etc. The rules use the ipset module to create and update a set of IP addresses named datavisor, which can be populated by querying the DataVisor API or using a script.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
+
