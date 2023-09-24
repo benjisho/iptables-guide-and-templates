@@ -11,11 +11,37 @@
 # Established and Related Connections (Stateful)
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# Use Case 1: Block SYN Flood Attacks
+# Use Case 1: Block SYN Flood Attacks (Variations)
+
+# Variation 1: Block SYN Flood Attacks by Limiting the Number of Simultaneous Half-Open Connections
 -A INPUT -p tcp --syn -m connlimit --connlimit-above 10 --connlimit-mask 32 -j DROP
 # Explanation: This rule blocks SYN flood attacks by limiting the number of simultaneous half-open connections.
+
+# Variation 2: Block SYN Flood Attacks by Dropping Invalid Packets
+-A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+-A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+-A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j DROP
+-A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+-A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+-A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+# Explanation: This rule blocks SYN flood attacks by dropping invalid packets that do not conform to the TCP protocol.
+
+# Variation 3: Block SYN Flood Attacks by Using SYN Cookies
+-A INPUT -p tcp --syn -m conntrack --ctstate NEW -m limit --limit 10/s --limit-burst 20 -j ACCEPT
+-A INPUT -p tcp --syn -m conntrack --ctstate NEW -j DROP
+# Explanation: This rule blocks SYN flood attacks by using SYN cookies, which are a way of handling half-open connections without keeping state information on the server.
+
+# Variation 4: Block SYN Flood Attacks by Using Hashlimit Module
+-A INPUT -p tcp --syn -m hashlimit --hashlimit-name synflood --hashlimit-mode srcip --hashlimit-above 10/sec --hashlimit-burst 20 --hashlimit-htable-expire 30000 -j DROP
+# Explanation: This rule blocks SYN flood attacks by using hashlimit module, which allows to limit the rate of packets per source IP address.
+
+# Variation 5: Block SYN Flood Attacks by Using Recent Module
+-A INPUT -p tcp --syn -m recent --name synflood --set
+-A INPUT -p tcp --syn -m recent --name synflood --update --seconds 1 --hitcount 10 -j DROP
+# Explanation: This rule blocks SYN flood attacks by using recent module, which allows to track the source IP addresses of packets and match them based on time and hit count.
 
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
 
 COMMIT
+
