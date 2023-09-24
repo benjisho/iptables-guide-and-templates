@@ -2,8 +2,8 @@
 
 This guide provides an introduction to iptables, a powerful tool for configuring and managing firewall rules on Linux systems.
 
-- **Common iptables usecases templates available - [here](iptables-templates)**
-- **Cyber Attacks Protection Templates available - [here](iptables-templates/cyber-attacks-protection)**
+- **Common templates available - [here](iptables-templates)**
+- **Cyber Attacks Protection templates available - [here](iptables-templates/cyber-attacks-protection)**
 
 ## Table of Contents
 1. [Introduction](#1-introduction)
