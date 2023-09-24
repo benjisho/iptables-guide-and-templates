@@ -11,9 +11,44 @@
 # Established and Related Connections (Stateful)
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# Use Case 12: Protect Against Cross-Site Scripting (XSS) Attacks
--A INPUT -p tcp --dport 80 -m string --algo bm --string "<script>" -j DROP
-# Explanation: This rule blocks incoming HTTP requests containing the "<script>" tag commonly used in XSS attacks.
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Use Case 18: Protect Against Cross-Site Scripting (XSS) Attacks (Variations)
+
+# Variation 1: Block Requests with Common XSS Payloads
+-A INPUT -m string --algo bm --string "<script>" -j DROP
+-A INPUT -m string --algo bm --string "alert(" -j DROP
+# Explanation: This rule blocks requests containing common XSS payloads.
+
+# Variation 2: Block Requests with JavaScript Files
+-A INPUT -m string --algo bm --string ".js" -j DROP
+# Explanation: This rule blocks requests with ".js" files, often used in XSS attacks.
+
+# Variation 3: Block Requests with Known XSS Keywords
+-A INPUT -m string --algo bm --string "document.cookie" -j DROP
+-A INPUT -m string --algo bm --string "eval(" -j DROP
+# Explanation: This rule blocks requests with known XSS keywords.
+
+# Variation 4: Block Requests with Non-Alphanumeric XSS Payloads
+-A INPUT -m string --algo bm --hex-string "|3C7363726970743E|3C2F7363726970743E|3C2F5363726970743E|3C736372697074203E|3C2F736372697074203E|3C2F7363726970743E|3C2F7363726970743E|3C21646F637479706520686561646572206E6F747363726970743D22223E|3C2174657874207363726970743E|3C2F7363726970743E|3C2F7363726970743E" -j DROP
+# Explanation: This rule blocks requests with non-alphanumeric XSS payloads in hexadecimal format.
+
+# Variation 5: Block Requests with Script Tags in Parameter Values
+-A INPUT -p tcp --dport 80 -m http_request --url_param "script" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --url_param "script" -j DROP
+# Explanation: This rule blocks requests with script tags in parameter values.
+
+# Variation 6: Block Requests with HTML Entities in Parameter Values (Possible XSS Encoding Bypass)
+-A INPUT -p tcp --dport 80 -m http_request --url_param "<" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --url_param "<" -j DROP
+# Explanation: This rule blocks requests with HTML entities in parameter values, which may be used to bypass XSS encoding.
+
+# Variation 7: Block Requests with Base64 Encoded XSS Payloads (Possible XSS Encoding Bypass)
+-A INPUT -p tcp --dport 80 -m http_request --url_param "base64" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --url_param "base64" -j DROP
+# Explanation: This rule blocks requests with base64 encoded XSS payloads, which may be used to bypass XSS encoding.
 
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
