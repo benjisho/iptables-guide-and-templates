@@ -1,9 +1,9 @@
 # iptables guide
 
 ## Table of Contents
-- [Introduction](#introduction)
-- [Guide](#guide)
-- [Templates](#templates)
+- [Introduction 📖](#introduction)
+- [Guide 📚](#guide)
+- [Templates 🧩](#templates)
 
 ## Introduction 📖
 This repository contains a guide and templates for using iptables, here you will find an introduction to iptables, a powerful tool for configuring and managing firewall rules on Linux systems firewall rules.
