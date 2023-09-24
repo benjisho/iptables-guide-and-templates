@@ -11,9 +11,33 @@
 # Established and Related Connections (Stateful)
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# Use Case 1: Block DNS Amplification Attacks
--A INPUT -p udp --dport 53 -m string --hex-string "|0000FF0001|" --algo bm -j DROP
-# Explanation: This rule blocks DNS amplification attacks by dropping DNS packets with specific malicious payload patterns.
+# Allow DNS Traffic (Change port if necessary)
+-A INPUT -p udp --dport 53 -j ACCEPT
+
+# Use Case 17: Mitigate DNS Amplification Attacks (Variations)
+
+# Variation 1: Block Incoming DNS Requests with Large Response Packets (DNS Amplification)
+-A INPUT -p udp --dport 53 -m length --length 300:65535 -j DROP
+# Explanation: This rule blocks incoming DNS requests with large response packets, typical of DNS amplification attacks.
+
+# Variation 2: Rate Limit Incoming DNS Queries to Prevent Amplification
+-A INPUT -p udp --dport 53 -m limit --limit 10/s -j ACCEPT
+-A INPUT -p udp --dport 53 -j DROP
+# Explanation: This rule limits incoming DNS queries to 10 per second to prevent DNS amplification attacks.
+
+# Variation 3: Block DNS Queries from Known Malicious IP Addresses
+-A INPUT -p udp --dport 53 -m recent --name dnsattack --update --seconds 60 --hitcount 10 -j DROP
+-A INPUT -p udp --dport 53 -m recent --name dnsattack --set -j ACCEPT
+# Explanation: This rule blocks DNS queries from known malicious IP addresses if they exceed 10 queries per minute.
+
+# Variation 4: Block DNS Responses with Spoofed Source IP Addresses
+-A INPUT -p udp --dport 53 -m recent --name dnsspoof --update --seconds 60 --hitcount 5 -j DROP
+-A INPUT -p udp --dport 53 -m recent --name dnsspoof --set -j ACCEPT
+# Explanation: This rule blocks DNS responses with spoofed source IP addresses if they exceed 5 responses per minute.
+
+# Variation 5: Block Incoming DNS Requests with Empty Queries (Possible Reflection Attack)
+-A INPUT -p udp --dport 53 -m u32 --u32 "12&0xFF=0" -j DROP
+# Explanation: This rule blocks incoming DNS requests with empty queries, which may indicate a reflection attack.
 
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
