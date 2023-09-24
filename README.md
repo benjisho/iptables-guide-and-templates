@@ -1,4 +1,4 @@
-# iptables-101-tutorial
+# iptables guide
 
 This guide provides an introduction to iptables, a powerful tool for configuring and managing firewall rules on Linux systems.
 
