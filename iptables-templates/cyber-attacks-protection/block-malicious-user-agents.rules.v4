@@ -1,0 +1,52 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow SSH Access (Change port if necessary)
+-A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Use Case 10: Block Malicious User-Agents (10 Most Well-Known Malicious Bots)
+
+# EarthLink Spammer: The first botnet to gain public notoriety, which sent phishing emails to collect sensitive information or download viruses onto victims’ computers.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "EarthLink Spammer" -j DROP
+
+# Storm: One of the first peer-to-peer botnets, which was involved in a wide range of criminal activities, from DDoS attacks to identity theft.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Storm" -j DROP
+
+# Cutwail: A spam botnet that contributed up to 46.5% of the world’s spam volume at one point, and is still active and available for rent today.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Cutwail" -j DROP
+
+# Grum: A spam botnet that specialized in pharmaceutical spam, and was capable of sending 39.9 billion messages per day.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Grum" -j DROP
+
+# Kraken: A botnet that infected 10% of all Fortune 500 companies, and could send as many as 600,000 emails per day.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Kraken" -j DROP
+
+# Conficker: A worm that infected millions of computers worldwide, and created a botnet that could be used for various malicious purposes, such as stealing data or installing ransomware.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Conficker" -j DROP
+
+# Mirai: The first major botnet to infect insecure IoT devices, and was behind a massive DDoS attack that left much of the internet inaccessible on the U.S. east coast.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Mirai" -j DROP
+
+# Necurs: A botnet that distributed malware such as Dridex, Locky, and Trickbot, and also launched DDoS attacks and spam campaigns.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Necurs" -j DROP
+
+# Emotet: A modular banking trojan that evolved into a botnet that delivered other malware, such as Ryuk and Qakbot, and also stole email credentials and content.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Emotet" -j DROP
+
+# Trickbot: A banking trojan that also acted as a botnet that delivered ransomware, such as Conti and Ryuk, and also harvested credentials and financial data.
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "Trickbot" -j DROP
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
