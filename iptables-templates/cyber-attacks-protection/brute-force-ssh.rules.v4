@@ -1,0 +1,22 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Use Case 10: Block Brute Force SSH Login Attempts
+-A INPUT -p tcp --dport 22 -m recent --name sshattack --update --seconds 60 --hitcount 4 -j DROP
+-A INPUT -p tcp --dport 22 -m recent --name sshattack --set -j ACCEPT
+# Explanation: This rule blocks repeated SSH login attempts from the same IP address by rate limiting and dropping excessive connection requests.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
