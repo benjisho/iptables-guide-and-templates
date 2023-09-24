@@ -12,7 +12,7 @@ iptables can help you protect your server from various cyber attacks, such as DD
 - the templates provide ready-to-use rules for common scenarios and use cases.
 
 ## Guide
-- **The iptables guide is available [here](iptables-complete-guide)**
+- **The iptables guide is available [here](https://github.com/benjisho/iptables-guide-and-templates/tree/main/iptables-complete-guide#iptables-guide)**
 
 The guide covers the following topics:
 - What is iptables and how does it work?
