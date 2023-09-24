@@ -1,0 +1,59 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Use Case 23: Protect Against Directory Traversal Attacks (Variations)
+
+# Variation 1: Block Requests with Common Directory Traversal Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "../" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "../" -j DROP
+# Explanation: This rule blocks requests with common directory traversal sequences ("../").
+
+# Variation 2: Block Requests with Encoded Directory Traversal Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "%2e%2e%2f" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "%2e%2e%2f" -j DROP
+# Explanation: This rule blocks requests with encoded directory traversal sequences ("%2e%2e%2f").
+
+# Variation 3: Block Requests with Double Encoded Directory Traversal Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "%252e%252e%252f" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "%252e%252e%252f" -j DROP
+# Explanation: This rule blocks requests with double encoded directory traversal sequences ("%252e%252e%252f").
+
+# Variation 4: Block Requests with Unicode Directory Traversal Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "\u002e\u002e\u002f" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "\u002e\u002e\u002f" -j DROP
+# Explanation: This rule blocks requests with unicode directory traversal sequences ("\u002e\u002e\u002f").
+
+# Variation 5: Block Requests with Backslash Directory Traversal Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "..\\" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "..\\" -j DROP
+# Explanation: This rule blocks requests with backslash directory traversal sequences ("..\\").
+
+# Variation 6: Block Requests with Absolute File Paths
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "/etc/" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "/etc/" -j DROP
+# Explanation: This rule blocks requests with absolute file paths ("/etc/").
+
+# Variation 7: Block Requests with Null Bytes to Bypass Filters
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "%00" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "%00" -j DROP
+# Explanation: This rule blocks requests with null bytes ("%00") to bypass filters.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
+
