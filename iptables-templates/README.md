@@ -1,6 +1,4 @@
-# IPTABLES Templates
-
-![IPTABLES Logo](https://example.com/iptables-logo.png)
+# iptables-templates
 
 Welcome to the IPTABLES Templates repository. Here you'll find a collection of iptables rules templates designed to address various security challenges and objectives. These templates are organized by categories, making it easy to enhance the security of your server.
 
