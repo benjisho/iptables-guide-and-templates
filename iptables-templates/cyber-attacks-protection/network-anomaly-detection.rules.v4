@@ -1,0 +1,57 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Network Anomaly Detection Rules (Variations)
+
+# Variation 1: Detect Port Scanning Behavior
+-A INPUT -p tcp -m recent --name portscan --rcheck --seconds 60 --hitcount 10 -j LOG --log-prefix "Port Scanning Detected: "
+-A INPUT -p tcp -m recent --name portscan --rcheck --seconds 60 --hitcount 10 -j DROP
+# Explanation: This rule logs and drops incoming traffic from IP addresses exhibiting port scanning behavior.
+
+# Variation 2: Detect DNS Amplification Queries
+-A INPUT -p udp --dport 53 -m length --length 100: -j LOG --log-prefix "Potential DNS Amplification: "
+-A INPUT -p udp --dport 53 -m length --length 100: -j DROP
+# Explanation: This rule logs and drops DNS queries that could be indicative of DNS amplification attacks.
+
+# Variation 3: Detect High-Rate Traffic from a Single IP
+-A INPUT -m recent --name highrate --update --seconds 60 --hitcount 100 -j LOG --log-prefix "High-Rate Traffic Detected: "
+-A INPUT -m recent --name highrate --update --seconds 60 --hitcount 100 -j DROP
+# Explanation: This rule logs and drops incoming traffic from a single IP address if it exceeds a high rate of packets per minute.
+
+# Variation 4: Detect Large ICMP Packets (Potential Ping Flood)
+-A INPUT -p icmp -m length --length 100: -j LOG --log-prefix "Potential Ping Flood: "
+-A INPUT -p icmp -m length --length 100: -j DROP
+# Explanation: This rule logs and drops ICMP packets that could indicate a potential ping flood attack.
+
+# Variation 5: Detect Unusual Protocol Usage
+-A INPUT -p tcp !--syn -j LOG --log-prefix "Unusual TCP Flags Detected: "
+-A INPUT -p udp !--sport 53 -j LOG --log-prefix "Unusual UDP Usage Detected: "
+-A INPUT -p icmp -j LOG --log-prefix "Unusual ICMP Traffic Detected: "
+-A INPUT -j DROP
+# Explanation: This rule logs and drops traffic with unusual usage of TCP, UDP, or ICMP protocols.
+
+# Variation 6: Detect Suspicious Outgoing Traffic
+-A OUTPUT -p tcp --dport 6666 -j LOG --log-prefix "Suspicious Outgoing Connection: "
+-A OUTPUT -p udp --dport 12345 -j LOG --log-prefix "Suspicious Outgoing Connection: "
+-A OUTPUT -j ACCEPT
+# Explanation: This rule logs suspicious outgoing connections to uncommon ports and allows other outgoing traffic.
+
+# Variation 7: Detect Large Outgoing Email Volumes
+-A OUTPUT -p tcp --dport 25 -m recent --name emailvolume --update --seconds 3600 --hitcount 500 -j LOG --log-prefix "Large Outgoing Email Volume Detected: "
+-A OUTPUT -p tcp --dport 25 -m recent --name emailvolume --update --seconds 3600 --hitcount 500 -j DROP
+# Explanation: This rule logs and drops outgoing SMTP traffic if it exceeds a certain volume within an hour.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
