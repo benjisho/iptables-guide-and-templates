@@ -11,7 +11,7 @@
 # Established and Related Connections (Stateful)
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# Use Case 22: Detect and Block Botnet Attacks (Variations)
+# Detect and Block Botnet Attacks (Variations)
 
 # Variation 1: Block ICMP Echo Requests from Known Botnet IP Addresses
 -A INPUT -p icmp --icmp-type echo-request -m recent --name botnet --update --seconds 60 --hitcount 10 -j DROP
