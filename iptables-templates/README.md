@@ -17,6 +17,22 @@ Securing your server is crucial in today's digital landscape. This repository pr
 
 Explore our collection of iptables templates:
 
+**Firewall Rules:**
+
+- [**basic-firewall.rules.v4**](firewall-rules/basic-firewall.rules.v4): Basic firewall rules that provide fundamental security.
+- [**advanced-ssh.rules.v4**](firewall-rules/advanced-ssh.rules.v4): Advanced SSH-related rules.
+- [**port-forwarding.rules.v4**](firewall-rules/port-forwarding.rules.v4): Rules for port forwarding.
+
+**Server-Specific Rules:**
+
+- [**db-server.rules.v4**](server-specific-rules/db-server.rules.v4): Rules specific to a database server.
+- [**dns-server.rules.v4**](server-specific-rules/dns-server.rules.v4): Rules for a DNS server.
+- [**ftp-server.rules.v4**](server-specific-rules/ftp-server.rules.v4): Rules for an FTP server.
+- [**mail-server.rules.v4**](server-specific-rules/mail-server.rules.v4): Rules for a mail server.
+- [**vpn-server.rules.v4**](server-specific-rules/vpn-server.rules.v4): Rules for a VPN server.
+- [**web-server.rules.v4**](server-specific-rules/web-server.rules.v4): Rules for a web server.
+
+
 - [**block-malicious-user-agents.rules.v4**](cyber-attacks-protection/block-malicious-user-agents.rules.v4): Block incoming requests with suspicious or malicious user-agent strings. This template is designed to filter out bots, crawlers, scanners, and other potentially harmful traffic.
 - [**botnet-detection.rules.v4**](cyber-attacks-protection/botnet-detection.rules.v4): Detect and log potential botnet activity on your server. This template helps identify command and control communication and distributed attacks originating from botnets.
 - [**brute-force-ssh.rules.v4**](cyber-attacks-protection/brute-force-ssh.rules.v4): Prevent brute force attacks on your SSH service by limiting the number of login attempts per minute from the same IP address.
