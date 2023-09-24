@@ -11,10 +11,46 @@
 # Established and Related Connections (Stateful)
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# Use Case 11: Prevent SQL Injection Attacks (Block Known Attack Strings)
--A INPUT -p tcp --dport 80 -m string --algo bm --string "SELECT * FROM" -j DROP
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Use Case 19: Protect Against SQL Injection Attacks (Variations)
+
+# Variation 1: Block SQL Keywords in Request Parameters
+-A INPUT -p tcp --dport 80 -m http_request --url_param "select" -j DROP
+-A INPUT -p tcp --dport 443 -m http_request --url_param "select" -j DROP
+# Explanation: This rule blocks requests with "select" keyword in URL parameters.
+
+# Variation 2: Block SQL Comment Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "--" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "--" -j DROP
+# Explanation: This rule blocks requests with SQL comment sequences ("--").
+
+# Variation 3: Block Requests with Common SQL Injection Payloads
+-A INPUT -m string --algo bm --string "'; DROP TABLE" -j DROP
+-A INPUT -m string --algo bm --string "UNION SELECT" -j DROP
+# Explanation: This rule blocks requests with common SQL injection payloads.
+
+# Variation 4: Block SQL Error Messages in Response
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "mysql_error(" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "mysql_error(" -j DROP
+# Explanation: This rule blocks responses containing SQL error messages.
+
+# Variation 5: Block Requests with UNION-Based SQL Injection Payloads
 -A INPUT -p tcp --dport 80 -m string --algo bm --string "UNION ALL SELECT" -j DROP
-# Explanation: This rule blocks incoming HTTP requests containing known SQL injection attack strings.
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "UNION ALL SELECT" -j DROP
+# Explanation: This rule blocks requests with UNION-based SQL injection payloads.
+
+# Variation 6: Block Requests with Boolean-Based SQL Injection Payloads
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "' OR 1=1" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "' OR 1=1" -j DROP
+# Explanation: This rule blocks requests with boolean-based SQL injection payloads.
+
+# Variation 7: Block Requests with Time-Based SQL Injection Payloads
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "SLEEP(" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "SLEEP(" -j DROP
+# Explanation: This rule blocks requests with time-based SQL injection payloads.
 
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
