@@ -1,1 +1,45 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
 
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow SSH Access (Change port if necessary)
+-A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Use Case 1: Rate Limiting for HTTP (80) Requests (DDoS Protection)
+-A INPUT -p tcp --dport 80 -m conntrack --ctstate NEW -m limit --limit 100/minute -j ACCEPT
+-A INPUT -p tcp --dport 80 -j DROP
+# Explanation: This rule limits incoming HTTP requests (port 80) to 100 per minute to mitigate DDoS attacks.
+
+# Use Case 2: Rate Limiting for DNS (53) Queries (DDoS Protection)
+-A INPUT -p udp --dport 53 -m conntrack --ctstate NEW -m limit --limit 500/minute -j ACCEPT
+-A INPUT -p udp --dport 53 -j DROP
+# Explanation: This rule limits incoming DNS queries (port 53) to 500 per minute to protect against DDoS attacks targeting DNS servers.
+
+# Use Case 3: Rate Limiting for SSH (22) Connection Attempts (DDoS Protection)
+-A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m limit --limit 10/minute -j ACCEPT
+-A INPUT -p tcp --dport 22 -j DROP
+# Explanation: This rule limits incoming SSH connection attempts (port 22) to 10 per minute to prevent SSH-based DDoS attacks.
+
+# Use Case 4: Rate Limiting for NTP (123) Queries (DDoS Protection)
+-A INPUT -p udp --dport 123 -m conntrack --ctstate NEW -m limit --limit 100/minute -j ACCEPT
+-A INPUT -p udp --dport 123 -j DROP
+# Explanation: This rule limits incoming NTP queries (port 123) to 100 per minute to mitigate DDoS attacks targeting NTP servers.
+
+# Use Case 5: Rate Limiting for SMTP (25) Connection Attempts (DDoS Protection)
+-A INPUT -p tcp --dport 25 -m conntrack --ctstate NEW -m limit --limit 5/minute -j ACCEPT
+-A INPUT -p tcp --dport 25 -j DROP
+# Explanation: This rule limits incoming SMTP connection attempts (port 25) to 5 per minute to prevent SMTP-based DDoS attacks.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
