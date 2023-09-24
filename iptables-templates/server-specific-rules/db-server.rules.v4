@@ -1,1 +1,33 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
 
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow SSH Access (Change port if necessary)
+-A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Allow Incoming Database Connections (Customize ports for each database)
+# MySQL (MariaDB)
+-A INPUT -p tcp --dport 3306 -j ACCEPT  # MySQL Database
+
+# PostgreSQL
+-A INPUT -p tcp --dport 5432 -j ACCEPT  # PostgreSQL Database
+
+# MongoDB
+-A INPUT -p tcp --dport 27017 -j ACCEPT  # MongoDB
+
+# Redis
+-A INPUT -p tcp --dport 6379 -j ACCEPT  # Redis Database
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
