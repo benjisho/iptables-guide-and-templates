@@ -1,0 +1,53 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Use Case 22: Detect and Block Botnet Attacks (Variations)
+
+# Variation 1: Block ICMP Echo Requests from Known Botnet IP Addresses
+-A INPUT -p icmp --icmp-type echo-request -m recent --name botnet --update --seconds 60 --hitcount 10 -j DROP
+-A INPUT -p icmp --icmp-type echo-request -m recent --name botnet --set -j ACCEPT
+# Explanation: This rule blocks ICMP Echo Requests from known botnet IP addresses if they exceed 10 requests per minute.
+
+# Variation 2: Block UDP Flood Attacks from Known Botnet IP Addresses
+-A INPUT -p udp -m recent --name botnet --update --seconds 60 --hitcount 50 -j DROP
+-A INPUT -p udp -m recent --name botnet --set -j ACCEPT
+# Explanation: This rule blocks UDP flood attacks from known botnet IP addresses if they exceed 50 packets per minute.
+
+# Variation 3: Block TCP SYN Flood Attacks from Known Botnet IP Addresses
+-A INPUT -p tcp --syn -m recent --name botnet --update --seconds 60 --hitcount 20 -j DROP
+-A INPUT -p tcp --syn -m recent --name botnet --set -j ACCEPT
+# Explanation: This rule blocks TCP SYN flood attacks from known botnet IP addresses if they exceed 20 packets per minute.
+
+# Variation 4: Block DNS Amplification Attacks from Known Botnet IP Addresses
+-A INPUT -p udp --dport 53 -m recent --name botnet --update --seconds 60 --hitcount 10 -j DROP
+-A INPUT -p udp --dport 53 -m recent --name botnet --set -j ACCEPT
+# Explanation: This rule blocks DNS amplification attacks from known botnet IP addresses if they exceed 10 queries per minute.
+
+# Variation 5: Block HTTP Flood Attacks from Known Botnet IP Addresses
+-A INPUT -p tcp --dport 80 -m recent --name botnet --update --seconds 60 --hitcount 30 -j DROP
+-A INPUT -p tcp --dport 80 -m recent --name botnet --set -j ACCEPT
+# Explanation: This rule blocks HTTP flood attacks from known botnet IP addresses if they exceed 30 requests per minute.
+
+# Variation 6: Block C&C Communication Channels from Known Botnet IP Addresses
+-A INPUT -p tcp !--dport 22 !--dport 80 !--dport 443 !--dport 53 !--dport 123 !--dport 25 !--dport 110 !--dport 143 !--dport 465 !--dport 587 !--dport 993 !--dport 995 !--dport 3306 !--dport 3389 !--dport 8080 !--dport 8443 !--dport 8888 !--dport 9000 !--dport 9090 !--dport 9200 !--dport 9300 !--dport 10000 !--dport 11211 !--dport 27017 !--dport 27018 !--dport 27019 !--dport 28017 !--recent-name botnet-j DROP
+# Explanation: This rule blocks C&C communication channels from known botnet IP addresses by dropping any TCP packets that are not destined to common ports.
+
+# Variation 7: Block P2P-Based Botnets Using Hashlimit Module
+-A INPUT -p tcp -m hashlimit --hashlimit-name p2pbotnet --hashlimit-mode srcip,dstip,dstport,srcport,protocol,srcmask,dstmask,srcprefix,dstprefix,srcrange,dstrange,srcports,dstports,srcip,dstip,dstports,srcports,protocol,srcmask,dstmask,srcprefix,dstprefix,srcrange,dstrange,srcports,dstports,srcip,dstip,dstports,srcports,protocol,srcmask,dstmask,srcprefix,dstprefix,srcrange,dstrange,srcports,dstports-srcip,dstip,dstports,srcports,protocol-srcmask,dstmask-srcprefix,dstprefix-srcrange,dstrange-srcports-dstports-dstip-dstports-srcports-protocol --hashlimit-above 10/sec --hashlimit-burst 20 --hashlimit-htable-expire 30000 -j DROP
+# Explanation: This rule blocks P2P-based botnets using hashlimit module, which allows to limit the rate of packets per source and destination IP address, port, and protocol.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
+
