@@ -1,13 +1,15 @@
 # iptables guide
 
+## Table of Contents
+- [Introduction](#introduction)
+- [Guide](#guide)
+- [Templates](#templates)
+
+## Introduction
 This repository contains a guide and templates for using iptables, here you will find an introduction to iptables, a powerful tool for configuring and managing firewall rules on Linux systems firewall rules.
 iptables can help you protect your server from various cyber attacks, such as DDoS, brute force, SQL injection, XSS, etc.
 - The guide explains the basic syntax and concepts of iptables,
 - the templates provide ready-to-use rules for common scenarios and use cases.
-
-## Table of Contents
-- [Guide](#guide)
-- [Templates](#templates)
 
 ## Guide
 **The guide is available [here](iptables-complete-guide)**
