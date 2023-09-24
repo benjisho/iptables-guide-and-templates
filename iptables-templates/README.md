@@ -6,6 +6,9 @@ Welcome to the IPTABLES Templates repository. Here you'll find a collection of i
 
 - [Overview](#overview)
 - [Templates](#templates)
+  - [Firewall Rules](#firewall-rules)
+  - [Server-Specific Rules](#server-specific-rules)
+  - [Cyber Attacks Protection](#cyber-attacks-protection)
 - [How to Use](#how-to-use)
 - [Disclaimer](#disclaimer)
 
