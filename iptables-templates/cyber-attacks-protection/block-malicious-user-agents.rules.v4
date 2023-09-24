@@ -14,7 +14,7 @@
 # Allow SSH Access (Change port if necessary)
 -A INPUT -p tcp --dport 22 -j ACCEPT
 
-# Use Case 10: Block Malicious User-Agents (10 Most Well-Known Malicious Bots)
+# Block Malicious User-Agents (10 Most Well-Known Malicious Bots)
 
 # EarthLink Spammer: The first botnet to gain public notoriety, which sent phishing emails to collect sensitive information or download viruses onto victims’ computers.
 -A INPUT -p tcp --dport 80 -m string --algo bm --string "EarthLink Spammer" -j DROP
