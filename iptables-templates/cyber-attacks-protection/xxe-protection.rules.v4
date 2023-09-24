@@ -1,0 +1,59 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow HTTP and HTTPS Traffic (Change ports if necessary)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Use Case 27: Protect Against XML External Entity (XXE) Attacks (Variations)
+
+# Variation 1: Block Requests with Common XXE Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "<!ENTITY" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "<!ENTITY" -j DROP
+# Explanation: This rule blocks requests with common XXE sequences ("<!ENTITY"), which can be used to define external entities that reference local or remote resources[^1^][1].
+
+# Variation 2: Block Requests with Encoded XXE Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "%3C%21ENTITY" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "%3C%21ENTITY" -j DROP
+# Explanation: This rule blocks requests with encoded XXE sequences ("%3C%21ENTITY"), which are equivalent to "<!ENTITY" but may bypass some filters[^1^][1].
+
+# Variation 3: Block Requests with Double Encoded XXE Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "%253C%2521ENTITY" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "%253C%2521ENTITY" -j DROP
+# Explanation: This rule blocks requests with double encoded XXE sequences ("%253C%2521ENTITY"), which are equivalent to "%3C%21ENTITY" but may bypass some filters[^1^][1].
+
+# Variation 4: Block Requests with Unicode XXE Sequences
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "\u003c\u0021\u0045\u004e\u0054\u0049\u0054\u0059" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "\u003c\u0021\u0045\u004e\u0054\u0049\u0054\u0059" -j DROP
+# Explanation: This rule blocks requests with unicode XXE sequences ("\u003c\u0021\u0045\u004e\u0054\u0049\u0054\u0059"), which are equivalent to "<!ENTITY" but may bypass some filters[^1^][1].
+
+# Variation 5: Block Requests with XML Declaration and DTD Declaration
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "<?xml" !--string "<!DOCTYPE" !--string "<!ELEMENT" !--string "<!ATTLIST" !--string "<!NOTATION" !--string "<!ENTITY" !--string "<!SHORTREF" !--string "<!USEMAP" !--string "<!INCLUDE" !--string "<!IGNORE" !--string "<![CDATA[" !--string "]]>" !--string "SYSTEM" !--string "PUBLIC" !--string "NDATA" !--string "CDATA" !--string "IDREFS" !--string "IDREF" !--string "ID" !--string "NMTOKENS" !--string "NMTOKEN" !--string "ENTITIES" !--string "ENTITY" !--string "NOTATION" !--string "REQUIRED" !--string "IMPLIED" !--string "FIXED" !--string "#PCDATA"-j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "<?xml" !--string "<!DOCTYPE" !--string "<!ELEMENT" !--string "<!ATTLIST" !--string "<!NOTATION" !--string "<!ENTITY" !--string "<!SHORTREF" !--string "<!USEMAP" !--string "<!INCLUDE" !--string "<!IGNORE" !--string "<![CDATA[" !--string "]]>" !--string "SYSTEM" !--string "PUBLIC" !--string "NDATA" !--string "CDATA" !--string "IDREFS" !--string "IDREF" !--string "ID" !--string "NMTOKENS" !--string "NMTOKEN" !--string "ENTITIES" !--string "ENTITY" !--string "NOTATION" !--string "REQUIRED" !--string "IMPLIED" !--string "FIXED" !--string "#PCDATA"-j DROP
+# Explanation: These rules block requests with XML declaration and DTD declaration, which can be used to specify the structure and entities of an XML document[^2^][2].
+
+# Variation 6: Block Requests with External Entities
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "<!ENTITY" --string "SYSTEM" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "<!ENTITY" --string "SYSTEM" -j DROP
+# Explanation: These rules block requests with external entities, which can be used to reference local or remote resources using the SYSTEM keyword[^2^][2].
+
+# Variation 7: Block Requests with Parameter Entities
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "<!ENTITY %" -j DROP
+-A INPUT -p tcp --dport 443 -m string --algo bm --string "<!ENTITY %" -j DROP
+# Explanation: These rules block requests with parameter entities, which can be used to define entities within the DTD using the % symbol[^2^][2].
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
+
