@@ -1,0 +1,21 @@
+# Default Policies
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback Interface (Allow all traffic)
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections (Stateful)
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Use Case 12: Protect Against Cross-Site Scripting (XSS) Attacks
+-A INPUT -p tcp --dport 80 -m string --algo bm --string "<script>" -j DROP
+# Explanation: This rule blocks incoming HTTP requests containing the "<script>" tag commonly used in XSS attacks.
+
+# Default Drop Rule (Deny all other incoming traffic)
+-A INPUT -j DROP
+
+COMMIT
