@@ -24,7 +24,7 @@ The guide covers the following topics:
 
 The guide is available in the `guide` directory of this repository.
 
-## Templates 🧩
+## Templates
 
 - **All templates available in the README- [here](iptables-templates/README.md)**
 - Specifically - some interesting advanced `Cyber Attacks Protection` templates available - [here](iptables-templates/cyber-attacks-protection)
