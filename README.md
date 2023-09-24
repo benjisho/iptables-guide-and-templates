@@ -27,7 +27,7 @@ The guide is available in the `guide` directory of this repository.
 ## Templates 🧩
 
 - **All templates available in the README- [here](iptables-templates/README.md)**
-- **Specifically - some interesting advanced Cyber Attacks Protection templates available - [here](iptables-templates/cyber-attacks-protection)**
+- **Specifically - some interesting advanced `Cyber Attacks Protection` templates available - [here](iptables-templates/cyber-attacks-protection)**
 
 The templates are collections of iptables rules that address specific security challenges or objectives.
 - The templates are based on best practices and common scenarios, but they are not meant to be used as-is without proper testing and customization.
