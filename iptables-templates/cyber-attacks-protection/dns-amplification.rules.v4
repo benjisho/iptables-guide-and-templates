@@ -39,7 +39,16 @@
 -A INPUT -p udp --dport 53 -m u32 --u32 "12&0xFF=0" -j DROP
 # Explanation: This rule blocks incoming DNS requests with empty queries, which may indicate a reflection attack.
 
+# Variation 6: Block Incoming DNS Requests with Recursive Queries (Possible Amplification Attack)
+-A INPUT -p udp --dport 53 -m string --algo bm --hex-string "|0000010000|" --from 20 --to 28 -j DROP
+# Explanation: This rule blocks incoming DNS requests with recursive queries, which may indicate an amplification attack.
+
+# Variation 7: Block Incoming DNS Requests with ANY Queries (Possible Amplification Attack)
+-A INPUT -p udp --dport 53 -m u32 --u32 "28&0xFFFF=0xFF00" -j DROP
+# Explanation: This rule blocks incoming DNS requests with ANY queries, which may indicate an amplification attack.
+
 # Default Drop Rule (Deny all other incoming traffic)
 -A INPUT -j DROP
 
 COMMIT
+
