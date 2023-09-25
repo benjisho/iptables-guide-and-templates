@@ -65,31 +65,31 @@ You can find these templates in the `iptables-templates` directory of this repos
 
 To use these templates, follow these steps:
 
-1. Make sure you have iptables installed and configured on your server. Refer to the installation and configuration guide if needed.
+- Make sure you have iptables installed and configured on your server. Refer to the installation and configuration guide if needed.
 
-2. Ensure you have root privileges or sudo access to run iptables commands.
+- Ensure you have root privileges or sudo access to run iptables commands.
 
-3. To apply a template, use the `iptables-restore` command. For example, to apply the `block-malicious-user-agents.rules.v4` template, run:
+- To apply a template, use the `iptables-restore` command. For example, to apply the `block-malicious-user-agents.rules.v4` template, run:
    ```bash
    sudo iptables-restore < templates/block-malicious-user-agents.rules.v4
    ```
 
-4. To append a template's rules to your existing configuration, use the -n option:
+- To append a template's rules to your existing configuration, use the -n option:
    ```bash
     sudo iptables-restore -n < templates/block-malicious-user-agents.rules.v4
     ```
 
-5. To insert a template's rules at a specific position in your existing chains, use the -I option with a line number:
+- To insert a template's rules at a specific position in your existing chains, use the -I option with a line number:
    ```bash
    sudo iptables-restore -I 5 < templates/block-malicious-user-agents.rules.v4
    ```
 
-6. To remove a template, use the iptables-flush command. For example, to remove the block-malicious-user-agents.rules.v4 template, run:
+- To remove a template, use the iptables-flush command. For example, to remove the block-malicious-user-agents.rules.v4 template, run:
    ```bash
    sudo iptables-flush INPUT
    ```
 
-7. To save a template, use the iptables-save command. For example, to save the block-malicious-user-agents.rules.v4 template, run:
+- To save a template, use the iptables-save command. For example, to save the block-malicious-user-agents.rules.v4 template, run:
    ```bash
    sudo iptables-save > templates/block-malicious-user-agents.rules.v4
    ```
