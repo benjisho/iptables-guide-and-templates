@@ -65,9 +65,9 @@ You can find these templates in the `iptables-templates` directory of this repos
 
 To use these templates, follow these steps:
 
-- Make sure you have iptables installed and configured on your server. Refer to the installation and configuration guide if needed.
+Make sure you have iptables installed and configured on your server. Refer to the installation and configuration guide if needed.
 
-- Ensure you have root privileges or sudo access to run iptables commands.
+Ensure you have root privileges or sudo access to run iptables commands.
 
 - To apply a template, use the `iptables-restore` command. For example, to apply the `block-malicious-user-agents.rules.v4` template, run:
    ```bash
