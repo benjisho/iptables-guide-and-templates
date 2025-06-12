@@ -79,14 +79,14 @@ Ensure you have root privileges or sudo access to run iptables commands.
     sudo iptables-restore -n < templates/block-malicious-user-agents.rules.v4
     ```
 
-- To insert a template's rules at a specific position in your existing chains, use the -I option with a line number:
+- To insert a template's rules at a specific position in your existing chains, use the `iptables` command with the `-I` option:
    ```bash
-   sudo iptables-restore -I 5 < templates/block-malicious-user-agents.rules.v4
+   sudo iptables -I INPUT 5 <rule>
    ```
 
-- To remove a template, use the iptables-flush command. For example, to remove the block-malicious-user-agents.rules.v4 template, run:
+- To remove a template, flush the appropriate chain using the `iptables -F` command. For example, to clear the `INPUT` chain, run:
    ```bash
-   sudo iptables-flush INPUT
+   sudo iptables -F INPUT
    ```
 
 - To save a template, use the iptables-save command. For example, to save the block-malicious-user-agents.rules.v4 template, run:
