@@ -83,6 +83,11 @@ Local outbound packet
           |
           v
  +------------------+
+ | nat/OUTPUT       |  (local DNAT/REDIRECT)
+ +------------------+
+          |
+          v
+ +------------------+
  | filter/OUTPUT    |
  +------------------+
           |
