@@ -95,6 +95,37 @@ Local outbound packet
      out to network
 ```
 
+#### Rule Matching Logic (First Match Wins)
+
+```text
+INPUT chain (top to bottom):
+
+[1] -A INPUT -i lo -j ACCEPT
+[2] -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+[3] -A INPUT -p tcp --dport 22 -j ACCEPT
+[4] -A INPUT -j DROP
+
+Packet arrives
+    |
+    v
++-------------------------------+
+| Rule [1] matches ?            |
++-------------------------------+
+   |yes                      |no
+   v                         v
+ ACCEPT              +-------------------------------+
+                     | Rule [2] matches ?            |
+                     +-------------------------------+
+                        |yes                      |no
+                        v                         v
+                      ACCEPT             +-------------------------------+
+                                         | Rule [3] matches ?            |
+                                         +-------------------------------+
+                                            |yes                      |no
+                                            v                         v
+                                          ACCEPT                    DROP
+```
+
 #### Basic iptables Commands
 - `iptables` and `ip6tables`: Basic command-line tools.
 - Viewing existing rules with `iptables -L`.
@@ -302,6 +333,28 @@ iptables -A web-server -p tcp --dport 443 -j ACCEPT
 # Use the 'web-server' chain in the 'INPUT' chain
 iptables -A INPUT -j web-server
 ```
+
+```text
+INPUT chain jump model:
+
++-------------------------+
+| filter/INPUT            |
+|-------------------------|
+| ...                     |
+| -j web-server           |----+
+| ...                     |    |
++-------------------------+    |
+                               v
+                     +-------------------------+
+                     | chain: web-server       |
+                     |-------------------------|
+                     | tcp dport 80  -> ACCEPT |
+                     | tcp dport 443 -> ACCEPT |
+                     | (no match) -> RETURN    |
+                     +-------------------------+
+                               |
+                               +----> back to INPUT (next rule)
+```
 #### Logging and Monitoring
 It is important to log iptables events so that you can troubleshoot problems and detect malicious activity.
 **Logging iptables events for analysis:**
@@ -423,6 +476,23 @@ Below is a complete example of an iptables.v4 configuration. Adjust the rules to
 -A INPUT -j DROP
 
 COMMIT
+```
+
+```text
+Complete configuration intent map
+
+Internet ---> [INPUT policy DROP]
+   |               |
+   |               +--> ACCEPT lo
+   |               +--> ACCEPT ESTABLISHED,RELATED
+   |               +--> ACCEPT SSH :22
+   |               +--> ACCEPT HTTP :80
+   |               +--> ACCEPT HTTPS :443
+   |               +--> RATE-LIMIT NEW :80 (100/min)
+   |               +--> DROP blocked source 192.168.1.100
+   |               +--> DROP everything else
+   v
+Protected server services
 ```
 In this complete iptables.v4 configuration, we've included default policies, rules for loopback traffic, allowing established and related connections, allowing SSH, HTTP, and HTTPS traffic, rate limiting, blocking specific IP addresses, and a default drop rule.
 Adjust this configuration to meet your specific security and networking needs.

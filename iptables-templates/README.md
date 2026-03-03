@@ -16,6 +16,32 @@ Welcome to the IPTABLES Templates repository. Here you'll find a collection of i
 
 Securing your server is crucial in today's digital landscape. This repository provides a set of carefully crafted iptables templates to help protect your server from various threats, such as botnet attacks, brute force attempts, and more. Each template is designed to address a specific security concern.
 
+```text
+Template strategy map
+
+                 +----------------------------------+
+                 |         Your Linux server        |
+                 +----------------------------------+
+                      /              |             \
+                     /               |              \
+                    v                v               v
+      +---------------------+  +----------------+  +---------------------------+
+      | Firewall Rules      |  | Server-Specific|  | Cyber Attacks Protection  |
+      | (baseline control)  |  | (role hardening)| | (threat mitigation)      |
+      +---------------------+  +----------------+  +---------------------------+
+             |                       |                         |
+             v                       v                         v
+      input/output policy      service allow-list       abuse/threat signatures,
+      + SSH/web basics         by server function       rate limits, anomaly rules
+```
+
+```text
+Traffic path (how templates are typically layered)
+
+Internet ---> [Base Firewall] ---> [Server-Specific Allow Rules] ---> [Attack Protection Rules] ---> Service
+                (default policy)      (ports/protocols)                 (rate-limit/detect/drop)
+```
+
 ## Templates
 
 Explore our collection of iptables templates:
