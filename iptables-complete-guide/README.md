@@ -51,6 +51,50 @@ Iptables is a command-line utility for configuring the built-in firewall functio
 - Targets: ACCEPT, DROP, REJECT, and more.
 - Rules: Defining conditions for packet processing.
 
+#### Packet Processing Order (IPv4)
+
+```text
+Inbound packet from network
+          |
+          v
+ +------------------+
+ | nat/PREROUTING   |  (DNAT happens here)
+ +------------------+
+          |
+          v
+ +------------------+
+ | Route decision   |
+ +------------------+
+   | local        | forwarded
+   v              v
+ +------------------+      +------------------+
+ | filter/INPUT     |      | filter/FORWARD   |
+ +------------------+      +------------------+
+   | ACCEPT               | ACCEPT
+   v                      v
+ local process          +------------------+
+                        | nat/POSTROUTING  | (SNAT/MASQUERADE)
+                        +------------------+
+                                 |
+                                 v
+                            out to network
+
+Local outbound packet
+          |
+          v
+ +------------------+
+ | filter/OUTPUT    |
+ +------------------+
+          |
+          v
+ +------------------+
+ | nat/POSTROUTING  | (SNAT/MASQUERADE)
+ +------------------+
+          |
+          v
+     out to network
+```
+
 #### Basic iptables Commands
 - `iptables` and `ip6tables`: Basic command-line tools.
 - Viewing existing rules with `iptables -L`.
@@ -79,7 +123,7 @@ iptables -F
 - Allowing outgoing HTTP requests.
 
 ### 6. Examples
-Example:
+Example 1: Base Access Rules (SSH allow + explicit block + outbound web)
 
 ```bash
 # Allow incoming SSH access
@@ -90,11 +134,26 @@ iptables -A INPUT -s 192.168.1.100 -j DROP
 
 # Allow outgoing HTTP requests
 iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
-
-### 6. Examples
-Example 1: Allow Web Traffic
-Create a rule to allow incoming HTTP and HTTPS traffic.
 ```
+
+```text
+Incoming to host (INPUT chain order matters):
+
+packet --> [rule: dport 22 ? ACCEPT] ---> allowed SSH
+   |
+   +----> [rule: src 192.168.1.100 ? DROP] ---> blocked source
+   |
+   +----> [next rules / policy]
+
+Outgoing from host (OUTPUT chain):
+
+packet --> [rule: dport 80 ? ACCEPT] ---> allowed HTTP egress
+   |
+   +----> [next rules / policy]
+```
+
+Example 2: Allow Web Traffic
+Create rules to allow incoming HTTP and HTTPS traffic.
 
 Example:
 
@@ -104,7 +163,21 @@ iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 ```
 
-Example 2: Port Forwarding
+```text
+                Internet clients
+                203.0.113.0/24
+                       |
+                       v
+          +-----------------------------+
+          | INPUT chain on web server   |
+          |-----------------------------|
+          | tcp dport 80  -> ACCEPT     |
+          | tcp dport 443 -> ACCEPT     |
+          | default policy/rules -> DROP|
+          +-----------------------------+
+```
+
+Example 3: Port Forwarding
 Redirect incoming requests on port 80 to an internal web server.
 
 Example:
@@ -112,16 +185,45 @@ Example:
 ```bash
 # Enable port forwarding from external port 80 to internal IP 192.168.1.10
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.1.10:80
+# Allow forwarding to internal web server
+iptables -A FORWARD -p tcp -d 192.168.1.10 --dport 80 -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
+# Allow return traffic from internal web server
+iptables -A FORWARD -p tcp -s 192.168.1.10 --sport 80 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 ```
 
-Example 3: Rate Limiting (Real-World Scenario)
+```text
+Client 198.51.100.50
+        |
+        v      dst=203.0.113.10:80
++------------------------------+
+| Firewall public IP .10       |
+| nat/PREROUTING               |
+| DNAT -> 192.168.1.10:80      |
++------------------------------+
+        |
+        v
+Internal web server 192.168.1.10:80
+```
+
+Example 4: Rate Limiting (Real-World Scenario)
 Limit the number of incoming HTTP requests to prevent DDoS attacks.
-Example:
 
 ```bash
 # Limit incoming HTTP requests to 100 per minute
 iptables -A INPUT -p tcp --dport 80 -m conntrack --ctstate NEW -m limit --limit 100/minute -j ACCEPT
 iptables -A INPUT -p tcp --dport 80 -j DROP
+```
+
+```text
+For NEW TCP connections to :80
+
+                 +-----------------------------+
+packet --------> | limit match <= 100/min ?    | --yes--> ACCEPT
+                 +-----------------------------+
+                                   |
+                                   no
+                                   v
+                                DROP
 ```
 
 ### 7. Advanced Configuration
@@ -154,6 +256,22 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 # DNAT rule to redirect incoming traffic on port 80 to a web server at 192.168.1.10:
 iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to-destination 192.168.1.10:80
+```
+
+```text
+DNAT (publish internal service)
+
+Internet client ---> [eth0 public IP:80]
+                        |
+                        v
+              nat/PREROUTING: DNAT
+                        |
+                        v
+                 192.168.1.10:80
+
+SNAT/MASQUERADE (hide private source)
+
+192.168.1.25 ---> nat/POSTROUTING ---> src rewritten to public IP ---> Internet
 ```
 #### Custom Chains
 Custom chains are a way to organize iptables rules into groups. This can be useful for complex rule sets.
