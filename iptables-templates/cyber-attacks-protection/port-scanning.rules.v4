@@ -66,4 +66,3 @@
 -A INPUT -j DROP
 
 COMMIT
-
